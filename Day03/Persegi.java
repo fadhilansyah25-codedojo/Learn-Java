@@ -1,39 +1,20 @@
 package Day03;
 
+import Day03.BluePrint.BangunDatar;
+
 public class Persegi extends BangunDatar {
-    private float sisi;
-
     // Constructor
-    Persegi() {
-    };
-
-    Persegi(float sisi) {
-        this.sisi = sisi;
-
-        this.hitungLuas();
-        this.hitungKeliling();
-    };
-
-    // Get & Set
-    public float getSisi() {
-        return sisi;
-    }
-
-    public void setSisi(float sisi) {
-        this.sisi = sisi;
-
-        this.hitungLuas();
-        this.hitungKeliling();
+    Persegi(double sisi) {
+        setAlas(sisi);
     }
 
     @Override
-    public void hitungLuas() {
-        this.setLuas((float) Math.pow((double) sisi, 2));
+    public double hitungLuas() {
+        return Math.pow(getAlas(), 2);
     }
 
     @Override
-    public void hitungKeliling() {
-        this.setKeliling(4 * sisi);
+    public double hitungKeliling() {
+        return 4 * getAlas();
     }
-
 }

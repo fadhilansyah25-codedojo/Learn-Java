@@ -1,27 +1,19 @@
 package Day03;
 
+import Day03.BluePrint.BangunDatar;
+
 public class PersegiPanjang extends BangunDatar {
-    private float alas;
-    private float tinggi;
-
-    PersegiPanjang() {
-    };
-
-    PersegiPanjang(float alas, float tinggi) {
-        this.alas = alas;
-        this.tinggi = tinggi;
-
-        this.hitungLuas();
-        this.hitungKeliling();
+    PersegiPanjang(double alas, double tinggi) {
+        super();
     }
 
     @Override
-    public void hitungLuas() {
-        this.setLuas(alas * tinggi);
+    public double hitungLuas() {
+        return this.getAlas() * this.getTinggi();
     }
 
     @Override
-    public void hitungKeliling() {
-        this.setKeliling(2 * (alas + tinggi));
+    public double hitungKeliling() {
+        return 2 * (this.getAlas() + this.getTinggi());
     }
 }

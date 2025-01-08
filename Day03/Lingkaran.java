@@ -1,54 +1,20 @@
 package Day03;
 
+import Day03.BluePrint.BangunDatar;
+
 public class Lingkaran extends BangunDatar {
-    private float jari;
-    private float diameter;
-
     // Constructor
-    Lingkaran(){};
-    
-    Lingkaran(float jari){
-        this.jari = jari;
-        this.diameter = 2 * jari;
-
-        this.hitungLuas();
-        this.hitungKeliling();
+    Lingkaran(double diameter) {
+        this.setAlas(diameter);
     };
 
-    Lingkaran(int jari){
-        this.jari = jari;
-        this.diameter = 2 * jari;
-
-        this.hitungLuas();
-        this.hitungKeliling();
-    };
-
-
-    // Get & Set
-    public float getJari() {
-        return jari;
-    }
-
-    public void setJari(float jari) {
-        this.jari = jari;
-        this.diameter = 2 * jari;
-
-        this.hitungLuas();
-        this.hitungKeliling();
-    }
-
-    public float getDiameter() {
-        return diameter;
+    @Override
+    public double hitungLuas() {
+        return Math.PI * Math.pow((this.getAlas() / 2), 2);
     }
 
     @Override
-    public void hitungLuas() {
-        this.setLuas((float)(Math.PI * Math.pow((double)jari, 2)));
+    public double hitungKeliling() {
+        return Math.PI * (this.getAlas() / 2);
     }
-
-    @Override
-    public void hitungKeliling() {
-        this.setKeliling((float)(Math.PI * (double)jari));
-    }
-
 }

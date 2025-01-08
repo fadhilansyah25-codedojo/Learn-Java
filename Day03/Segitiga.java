@@ -1,90 +1,41 @@
 package Day03;
 
-public class Segitiga extends BangunDatar {
-    private float alas;
-    private float tinggi;
+import Day03.BluePrint.BangunDatar;
 
-    private float sisiA;
-    private float sisiB;
-    private float sisiC;
+public class Segitiga extends BangunDatar {
+    private double sisiA;
+    private double sisiB;
+    private double sisiC;
 
     // Constructor
     Segitiga() {
     };
 
-    Segitiga(float alas, float tinggi) {
-        this.alas = alas;
-        this.tinggi = tinggi;
-
-        this.hitungLuas();
+    Segitiga(double alas, double tinggi) {
+        super();
     };
 
-    Segitiga(float alas, float tinggi, float a, float b, float c) {
-        this.alas = alas;
-        this.tinggi = tinggi;
+    Segitiga(double alas, double tinggi, double a, double b, double c) {
+        this.setAlas(alas);
+        this.setTinggi(tinggi);
 
         this.sisiA = a;
         this.sisiB = b;
         this.sisiC = c;
     };
 
-    // Get & Set
-    public float getAlas() {
-        return alas;
-    }
-
-    public void setAlas(float alas) {
-        this.alas = alas;
-
-        this.hitungLuas();
-    }
-
-    public float getTinggi() {
-        return tinggi;
-    }
-
-    public void setTinggi(float tinggi) {
-        this.tinggi = tinggi;
-
-        this.hitungLuas();
-    }
-
-    public float getSisiA() {
-        return sisiA;
-    }
-
-    public void setSisiA(float sisiA) {
-        this.sisiA = sisiA;
-    }
-
-    public float getSisiB() {
-        return sisiB;
-    }
-
-    public void setSisiB(float sisiB) {
-        this.sisiB = sisiB;
-    }
-
-    public float getSisiC() {
-        return sisiC;
-    }
-
-    public void setSisiC(float sisiC) {
-        this.sisiC = sisiC;
-    }
-
     // Method
     @Override
-    public void hitungLuas() {
-        this.setLuas((this.alas * this.tinggi) * 0.5f);
+    public double hitungLuas() {
+        return (this.getAlas() * this.getTinggi()) * 0.5f;
     }
 
     @Override
-    public void hitungKeliling() {
+    public double hitungKeliling() {
         if (sisiA != 0 && sisiB != 0 && sisiC != 0) {
-            this.setKeliling(sisiA + sisiB + sisiC);
+            return sisiA + sisiB + sisiC;
         } else {
-            System.out.println("Semua nilai dari sisi segitiga tidak lengkap!");
+            return 0;
         }
     }
 }
