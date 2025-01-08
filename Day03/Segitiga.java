@@ -4,9 +4,9 @@ public class Segitiga extends BangunDatar {
     private float alas;
     private float tinggi;
 
-    public float sisiA;
-    public float sisiB;
-    public float sisiC;
+    private float sisiA;
+    private float sisiB;
+    private float sisiC;
 
     // Constructor
     Segitiga() {
@@ -47,6 +47,30 @@ public class Segitiga extends BangunDatar {
         this.tinggi = tinggi;
 
         this.hitungLuas();
+    }
+
+    public float getSisiA() {
+        return sisiA;
+    }
+
+    public void setSisiA(float sisiA) {
+        this.sisiA = sisiA;
+    }
+
+    public float getSisiB() {
+        return sisiB;
+    }
+
+    public void setSisiB(float sisiB) {
+        this.sisiB = sisiB;
+    }
+
+    public float getSisiC() {
+        return sisiC;
+    }
+
+    public void setSisiC(float sisiC) {
+        this.sisiC = sisiC;
     }
 
     // Method

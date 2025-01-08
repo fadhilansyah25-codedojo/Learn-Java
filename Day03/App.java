@@ -22,5 +22,16 @@ public class App {
         myJajarGenjang.sisiA = 10;
         myJajarGenjang.sisiB = 10;
         System.out.println("keliling Lingkaran: "+myLingkaran.getKeliling());
+
+        // Segitiga
+        Segitiga mySegitiga = new Segitiga(10,5);
+        System.out.println("Luas Segitiga: "+mySegitiga.getLuas());
+
+        mySegitiga.setSisiA(10);
+        mySegitiga.setSisiB(20);
+        mySegitiga.setSisiC(10);
+        mySegitiga.hitungKeliling();
+        
+        System.out.println("keliling Segitiga: "+mySegitiga.getKeliling());
     }
 }
