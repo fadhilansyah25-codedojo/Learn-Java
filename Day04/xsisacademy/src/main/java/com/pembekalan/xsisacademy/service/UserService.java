@@ -2,14 +2,17 @@ package com.pembekalan.xsisacademy.service;
 
 import java.util.List;
 
+import com.pembekalan.xsisacademy.dto.request.UserRequestDto;
+import com.pembekalan.xsisacademy.dto.response.UserResponseDto;
 import com.pembekalan.xsisacademy.entity.User;
 
 public interface UserService {
-    List<User> getAllUsers();
+    
+    List<UserResponseDto> getAllUsers();
 
-    User getUserById(Integer id);
+    UserResponseDto getUserById(Integer id);
 
     void deleteUserById(Integer id);
 
-    User saveUser(User user);
+    User saveUser(UserRequestDto userRequestDto);
 }
