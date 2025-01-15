@@ -1,4 +1,4 @@
-package com.pembekalan.xsisacademy.service.impl;
+package com.pembekalan.xsisacademy.service.implementation;
 
 import java.util.List;
 import java.util.stream.Collectors;
