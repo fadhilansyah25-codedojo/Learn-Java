@@ -17,71 +17,72 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.pembekalan.xsisacademy.dto.request.PublisherRequestDto;
-import com.pembekalan.xsisacademy.dto.response.PublisherResponseDto;
-import com.pembekalan.xsisacademy.entity.Publisher;
-import com.pembekalan.xsisacademy.service.PublisherService;
+import com.pembekalan.xsisacademy.dto.request.BookRequestDto;
+import com.pembekalan.xsisacademy.dto.response.BookResponseDto;
+import com.pembekalan.xsisacademy.service.BookService;
 
 @RestController
 @CrossOrigin("*")
-@RequestMapping("/api/publisher")
-public class PublisherController {
+@RequestMapping("/api/book")
+public class BookController {
     @Autowired
-    PublisherService publisherService;
+    BookService bookService;
 
     @GetMapping("")
     public ResponseEntity<?> getAllPublishers() {
-        List<PublisherResponseDto> publisherResponseDtos = publisherService.getAllPublishers();
+        List<BookResponseDto> bookResponseDtos = bookService.getAllBooks();
 
         HashMap<String, Object> resultMap = new HashMap<>();
         resultMap.put("status", "200");
         resultMap.put("message", "success");
-        resultMap.put("data", publisherResponseDtos);
+        resultMap.put("data", bookResponseDtos);
 
         return new ResponseEntity<>(resultMap, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getPublisherById(@PathVariable Integer id) {
-        PublisherResponseDto publisherResponseDto = publisherService.getPublisherById(id);
-        LinkedHashMap<String, Object> resultMap = new LinkedHashMap<>();
+    public ResponseEntity<?> getBookById(@PathVariable Integer id) {
+        BookResponseDto bookResponseDtos = bookService.getBookById(id);
+
+        HashMap<String, Object> resultMap = new HashMap<>();
         resultMap.put("status", "200");
         resultMap.put("message", "success");
-        resultMap.put("data", publisherResponseDto);
+        resultMap.put("data", bookResponseDtos);
 
         return new ResponseEntity<>(resultMap, HttpStatus.OK);
     }
 
     @PostMapping("")
-    public ResponseEntity<?> savePublisher(@RequestBody PublisherRequestDto publisherRequestDto) {
-        Publisher publisher = publisherService.savePublisher(publisherRequestDto);
+    public ResponseEntity<?> saveBook(@RequestBody BookRequestDto bookRequestDto) {
+
+        BookResponseDto bookResponseDto = bookService.saveBook(bookRequestDto);
+
         LinkedHashMap<String, Object> resultMap = new LinkedHashMap<>();
 
         resultMap.put("status", "200");
         resultMap.put("message", "success");
-        resultMap.put("data", publisher);
+        resultMap.put("data", bookResponseDto);
 
         return new ResponseEntity<>(resultMap, HttpStatus.OK);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updatePublisher(@PathVariable Integer id,
-            @RequestBody PublisherRequestDto publisherRequestDto) {
+    @PutMapping("")
+    public ResponseEntity<?> editBook(@RequestBody BookRequestDto bookRequestDto) {
 
-        PublisherResponseDto publisherResponseDto = publisherService.editPublisher(publisherRequestDto, id);
+        BookResponseDto bookResponseDto = bookService.saveBook(bookRequestDto);
 
         LinkedHashMap<String, Object> resultMap = new LinkedHashMap<>();
 
         resultMap.put("status", "200");
         resultMap.put("message", "success");
-        resultMap.put("data", publisherResponseDto);
+        resultMap.put("data", bookResponseDto);
 
         return new ResponseEntity<>(resultMap, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deletePublisher(@PathVariable Integer id) {
-        publisherService.deletePublisherById(id);
+    public ResponseEntity<?> deleteBook(@PathVariable Integer id) {
+        bookService.deleteBookById(id);
         LinkedHashMap<String, Object> resultMap = new LinkedHashMap<>();
 
         resultMap.put("status", "200");

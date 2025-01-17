@@ -61,5 +61,4 @@ public class PublisherServiceImpl implements PublisherService {
     public void deletePublisherById(Integer id) {
         publisherRepository.deleteById(id);
     }
-
 }
