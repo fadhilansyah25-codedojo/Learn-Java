@@ -9,6 +9,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.web.client.RestTemplate;
 
 import com.github.javafaker.Faker;
 import com.pembekalan.xsisacademy.entity.Author;
@@ -42,6 +43,11 @@ public class XsisacademyApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(XsisacademyApplication.class, args);
+	}
+
+	@Bean
+	RestTemplate restTemplate() {
+		return new RestTemplate();
 	}
 
 	@Bean
@@ -94,8 +100,7 @@ public class XsisacademyApplication {
 						faker.book().title(),
 						faker.book().title(),
 						(random.nextInt(100) + 1),
-						faker.date().between(new Date(2012 - 1900, 0, 1), new Date(2024 - 1900, 12,1))
-						);
+						faker.date().between(new Date(2012 - 1900, 0, 1), new Date(2024 - 1900, 12, 1)));
 
 				bookRepository.save(bookSeed);
 			}
