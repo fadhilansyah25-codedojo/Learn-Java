@@ -69,7 +69,7 @@ public class PublisherViewController {
         // Build the request body
         HttpEntity<PublisherRequestDto> requestEntity = new HttpEntity<>(publisherRequestDto, headers);
 
-        ResponseEntity<ApiResponse<PublisherResponseDto>> response = restTemplate.exchange(
+        restTemplate.exchange(
                 ApiConfig.PUBLISHERS,
                 HttpMethod.POST, requestEntity,
                 new ParameterizedTypeReference<ApiResponse<PublisherResponseDto>>() {
@@ -93,7 +93,7 @@ public class PublisherViewController {
 
     @GetMapping("/delete/{id}")
     public String deletePublisher(Model model, @PathVariable Integer id) {
-        ResponseEntity<ApiResponse<?>> response = restTemplate.exchange(
+        restTemplate.exchange(
                 ApiConfig.PUBLISHERS + "/" + id,
                 HttpMethod.DELETE, null,
                 new ParameterizedTypeReference<ApiResponse<?>>() {

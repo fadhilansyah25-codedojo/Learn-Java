@@ -24,6 +24,7 @@ import com.pembekalan.xsisacademy.dto.request.BookRequestDto;
 import com.pembekalan.xsisacademy.dto.response.ApiResponse;
 import com.pembekalan.xsisacademy.dto.response.AuthorResponseDto;
 import com.pembekalan.xsisacademy.dto.response.BookResponseDto;
+import com.pembekalan.xsisacademy.dto.response.CategoryResponseDto;
 import com.pembekalan.xsisacademy.dto.response.PublisherResponseDto;
 import com.pembekalan.xsisacademy.entity.Category;
 import com.pembekalan.xsisacademy.repository.CategoryRepository;
@@ -36,117 +37,134 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/book")
 public class BookViewController {
 
-    @Autowired
-    RestTemplate restTemplate;
+        @Autowired
+        RestTemplate restTemplate;
 
-    @Autowired
-    AuthorService authorService;
+        @Autowired
+        AuthorService authorService;
 
-    @Autowired
-    CategoryRepository categoryRepository;
+        @Autowired
+        CategoryRepository categoryRepository;
 
-    @GetMapping("")
-    @SuppressWarnings("null")
-    public String getAllBooks(Model model) {
-        String title = "Books Page";
+        @GetMapping("")
+        @SuppressWarnings("null")
+        public String getAllBooks(Model model) {
+                String title = "Books Page";
 
-        ResponseEntity<ApiResponse<List<BookResponseDto>>> response = restTemplate.exchange(ApiConfig.BOOKS,
-                HttpMethod.GET, null,
-                new ParameterizedTypeReference<ApiResponse<List<BookResponseDto>>>() {
-                });
+                ResponseEntity<ApiResponse<List<BookResponseDto>>> response = restTemplate.exchange(ApiConfig.BOOKS,
+                                HttpMethod.GET, null,
+                                new ParameterizedTypeReference<ApiResponse<List<BookResponseDto>>>() {
+                                });
 
-        model.addAttribute("books", response.getBody().getData());
-        model.addAttribute("title", title);
-        return "book/index";
-    }
+                model.addAttribute("books", response.getBody().getData());
+                model.addAttribute("title", title);
+                return "book/index";
+        }
 
-    @GetMapping("/form")
-    @SuppressWarnings("null")
-    public String bookForm(Model model) {
-        BookRequestDto bookRequestDto = new BookRequestDto();
+        @GetMapping("/form")
+        @SuppressWarnings("null")
+        public String bookForm(Model model) {
+                BookRequestDto bookRequestDto = new BookRequestDto();
 
-        ResponseEntity<ApiResponse<List<PublisherResponseDto>>> response = restTemplate.exchange(ApiConfig.PUBLISHERS,
-                HttpMethod.GET, null,
-                new ParameterizedTypeReference<ApiResponse<List<PublisherResponseDto>>>() {
-                });
+                ResponseEntity<ApiResponse<List<PublisherResponseDto>>> response = restTemplate.exchange(
+                                ApiConfig.PUBLISHERS,
+                                HttpMethod.GET, null,
+                                new ParameterizedTypeReference<ApiResponse<List<PublisherResponseDto>>>() {
+                                });
 
-        List<PublisherResponseDto> publishers = response.getBody().getData();
+                List<PublisherResponseDto> publishers = response.getBody().getData();
 
-        List<AuthorResponseDto> authors = authorService.getAllAuthors();
+                List<AuthorResponseDto> authors = authorService.getAllAuthors();
 
-        List<Category> categories = categoryRepository.findAll();
+                List<Category> categories = categoryRepository.findAll();
 
-        model.addAttribute("book", bookRequestDto);
-        model.addAttribute("publishers", publishers);
-        model.addAttribute("authors", authors);
-        model.addAttribute("categories", categories);
+                model.addAttribute("book", bookRequestDto);
+                model.addAttribute("publishers", publishers);
+                model.addAttribute("authors", authors);
+                model.addAttribute("categories", categories);
 
-        return "book/form";
-    }
+                return "book/form";
+        }
 
-    @PostMapping("/save")
-    public String saveBook(@ModelAttribute BookRequestDto bookRequestDto, BindingResult result) {
-        // Create headers
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
+        @PostMapping("/save")
+        public String saveBook(@ModelAttribute BookRequestDto bookRequestDto, BindingResult result) {
+                // Create headers
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.APPLICATION_JSON);
 
-        // Build the request body
-        HttpEntity<BookRequestDto> requestEntity = new HttpEntity<>(bookRequestDto, headers);
+                // Build the request body
+                HttpEntity<BookRequestDto> requestEntity = new HttpEntity<>(bookRequestDto, headers);
 
-        ResponseEntity<ApiResponse<BookResponseDto>> response = restTemplate.exchange(
-                ApiConfig.BOOKS,
-                HttpMethod.POST, requestEntity,
-                new ParameterizedTypeReference<ApiResponse<BookResponseDto>>() {
-                });
+                restTemplate.exchange(
+                                ApiConfig.BOOKS,
+                                HttpMethod.POST, requestEntity,
+                                new ParameterizedTypeReference<ApiResponse<BookResponseDto>>() {
+                                });
 
-        return "redirect:/book";
-    }
+                return "redirect:/book";
+        }
 
-    @SuppressWarnings("null")
-    @GetMapping("/edit/{id}")
-    public String editBook(Model model, @PathVariable("id") Integer id) {
-        ResponseEntity<ApiResponse<List<PublisherResponseDto>>> Publisherresponse = restTemplate.exchange(
-                ApiConfig.PUBLISHERS,
-                HttpMethod.GET, null,
-                new ParameterizedTypeReference<ApiResponse<List<PublisherResponseDto>>>() {
-                });
+        @SuppressWarnings("null")
+        @GetMapping("/edit/{id}")
+        public String editBook(Model model, @PathVariable("id") Integer id) {
+                ResponseEntity<ApiResponse<List<PublisherResponseDto>>> publisherResponse = restTemplate.exchange(
+                                ApiConfig.PUBLISHERS,
+                                HttpMethod.GET,
+                                null,
+                                new ParameterizedTypeReference<ApiResponse<List<PublisherResponseDto>>>() {
+                                });
 
-        List<PublisherResponseDto> publishers = Publisherresponse.getBody().getData();
+                ResponseEntity<ApiResponse<List<AuthorResponseDto>>> authorResponse = restTemplate.exchange(
+                                ApiConfig.AUTHORS,
+                                HttpMethod.GET,
+                                null,
+                                new ParameterizedTypeReference<ApiResponse<List<AuthorResponseDto>>>() {
+                                });
 
-        List<AuthorResponseDto> authors = authorService.getAllAuthors();
+                ResponseEntity<ApiResponse<List<CategoryResponseDto>>> categoryResponse = restTemplate.exchange(
+                                ApiConfig.CATEGORY,
+                                HttpMethod.GET,
+                                null,
+                                new ParameterizedTypeReference<ApiResponse<List<CategoryResponseDto>>>() {
+                                });
 
-        List<Category> categories = categoryRepository.findAll();
+                List<PublisherResponseDto> publishers = publisherResponse.getBody().getData();
 
-        model.addAttribute("publishers", publishers);
-        model.addAttribute("authors", authors);
-        model.addAttribute("categories", categories);
+                List<AuthorResponseDto> authors = authorResponse.getBody().getData();
 
-        ResponseEntity<ApiResponse<BookResponseDto>> response = restTemplate.exchange(ApiConfig.BOOKS + "/" + id,
-                HttpMethod.GET, null,
-                new ParameterizedTypeReference<ApiResponse<BookResponseDto>>() {
-                });
+                List<CategoryResponseDto> categories = categoryResponse.getBody().getData();
 
-        BookResponseDto bookResponseDto = response.getBody().getData();
+                model.addAttribute("publishers", publishers);
+                model.addAttribute("authors", authors);
+                model.addAttribute("categories", categories);
 
-        model.addAttribute("book", bookResponseDto);
-        model.addAttribute("selectedAuthorId", bookResponseDto.getAuthor().getId());
-        model.addAttribute("selectedPublisherId",
-                bookResponseDto.getPublisher().getId());
-        model.addAttribute("selectedCategoryId",
-                bookResponseDto.getCategory().getId());
+                ResponseEntity<ApiResponse<BookResponseDto>> response = restTemplate.exchange(
+                                ApiConfig.BOOKS + "/" + id,
+                                HttpMethod.GET, null,
+                                new ParameterizedTypeReference<ApiResponse<BookResponseDto>>() {
+                                });
 
-        return "book/form";
-    }
+                BookResponseDto bookResponseDto = response.getBody().getData();
 
-    @GetMapping("/delete/{id}")
-    public String deleteBook(Model model, @PathVariable Integer id) {
-        ResponseEntity<ApiResponse<?>> response = restTemplate.exchange(
-                ApiConfig.BOOKS + "/" + id,
-                HttpMethod.DELETE, null,
-                new ParameterizedTypeReference<ApiResponse<?>>() {
-                });
+                model.addAttribute("book", bookResponseDto);
+                model.addAttribute("selectedAuthorId", bookResponseDto.getAuthor().getId());
+                model.addAttribute("selectedPublisherId",
+                                bookResponseDto.getPublisher().getId());
+                model.addAttribute("selectedCategoryId",
+                                bookResponseDto.getCategory().getId());
 
-        return "redirect:/book";
-    }
+                return "book/form";
+        }
+
+        @GetMapping("/delete/{id}")
+        public String deleteBook(Model model, @PathVariable Integer id) {
+                restTemplate.exchange(
+                                ApiConfig.BOOKS + "/" + id,
+                                HttpMethod.DELETE, null,
+                                new ParameterizedTypeReference<ApiResponse<?>>() {
+                                });
+
+                return "redirect:/book";
+        }
 
 }

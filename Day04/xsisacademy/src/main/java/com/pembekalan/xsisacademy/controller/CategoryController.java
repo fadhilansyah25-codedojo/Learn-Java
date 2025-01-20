@@ -1,65 +1,93 @@
 package com.pembekalan.xsisacademy.controller;
 
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.servlet.ModelAndView;
-
-import com.pembekalan.xsisacademy.entity.Category;
-import com.pembekalan.xsisacademy.repository.CategoryRepository;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
-@RequestMapping("/category")
+import com.pembekalan.xsisacademy.dto.request.CategoryRequestDto;
+import com.pembekalan.xsisacademy.dto.response.CategoryResponseDto;
+import com.pembekalan.xsisacademy.service.CategoryService;
+
+@RestController
+@CrossOrigin
+@RequestMapping("/api/category")
 public class CategoryController {
-
     @Autowired
-    CategoryRepository categoryRepository;
+    CategoryService categoryService;
 
     @GetMapping("")
-    public ModelAndView getAllCategories() {
-        ModelAndView view = new ModelAndView("category/index");
-        String title = "Category Page";
-        List<Category> categories = categoryRepository.getAllCategories();
-        view.addObject("title", title);
-        view.addObject("categories", categories);
-        return view;
+    public ResponseEntity<?> getAllCategories() {
+        List<CategoryResponseDto> categoryResponseDtos = categoryService.getAllCategories();
+
+        HashMap<String, Object> resultMap = new HashMap<>();
+        resultMap.put("status", "200");
+        resultMap.put("message", "success");
+        resultMap.put("data", categoryResponseDtos);
+
+        return new ResponseEntity<>(resultMap, HttpStatus.OK);
     }
 
-    @GetMapping("/form")
-    public ModelAndView form() {
-        ModelAndView view = new ModelAndView("category/form");
-        Category category = new Category();
-        view.addObject("category", category);
-        return view;
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getCategoryById(@PathVariable Integer id) {
+        CategoryResponseDto categoryResponseDto = categoryService.getCategoryById(id);
+
+        HashMap<String, Object> resultMap = new HashMap<>();
+        resultMap.put("status", "200");
+        resultMap.put("message", "success");
+        resultMap.put("data", categoryResponseDto);
+
+        return new ResponseEntity<>(resultMap, HttpStatus.OK);
     }
 
-    @PostMapping("/store")
-    public ModelAndView save(@ModelAttribute Category category, BindingResult result) {
-        if (!result.hasErrors()) {
-            categoryRepository.save(category);
-        }
-        return new ModelAndView("redirect:/category");
+    @PostMapping("")
+    public ResponseEntity<?> saveCategory(@RequestBody CategoryRequestDto categoryRequestDto) {
+
+        CategoryResponseDto categoryResponseDto = categoryService.saveCategory(categoryRequestDto);
+
+        LinkedHashMap<String, Object> resultMap = new LinkedHashMap<>();
+
+        resultMap.put("status", "200");
+        resultMap.put("message", "success");
+        resultMap.put("data", categoryResponseDto);
+
+        return new ResponseEntity<>(resultMap, HttpStatus.OK);
     }
 
-    @GetMapping("/edit/{id}")
-    public ModelAndView edit(@PathVariable Integer id) {
-        ModelAndView view = new ModelAndView("category/form");
-        Category category = categoryRepository.findById(id).orElse(null);
-        view.addObject("category", category);
-        return view;
+    @PutMapping("/{id}")
+    public ResponseEntity<?> editCategory(@RequestBody CategoryRequestDto categoryRequestDto, @PathVariable Integer id) {
+
+        CategoryResponseDto categoryResponseDto = categoryService.saveCategory(categoryRequestDto);
+
+        LinkedHashMap<String, Object> resultMap = new LinkedHashMap<>();
+
+        resultMap.put("status", "200");
+        resultMap.put("message", "success");
+        resultMap.put("data", categoryResponseDto);
+
+        return new ResponseEntity<>(resultMap, HttpStatus.OK);
     }
 
-    @GetMapping("/delete/{id}")
-    public ModelAndView delete(@PathVariable Integer id) {
-        Category category = categoryRepository.findById(id).orElse(null);
-        categoryRepository.deleteById(category.getId());
-        return new ModelAndView("redirect:/category");
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteCategory(@PathVariable Integer id) {
+        categoryService.deleteCategoryById(id);
+        LinkedHashMap<String, Object> resultMap = new LinkedHashMap<>();
+
+        resultMap.put("status", "200");
+        resultMap.put("message", "success");
+
+        return new ResponseEntity<>(resultMap, HttpStatus.OK);
     }
 }

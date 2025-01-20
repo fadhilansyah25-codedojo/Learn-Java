@@ -5,11 +5,10 @@ import java.time.LocalDateTime;
 import lombok.Data;
 
 @Data
-public class AuthorResponseDto {
+public class CategoryResponseDto {
     private Integer id;
     private String name;
-    private Integer publishedBooks;
     private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private LocalDateTime updateAt;
     private Boolean isDeleted;
 }

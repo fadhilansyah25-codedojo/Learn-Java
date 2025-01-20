@@ -1,79 +1,93 @@
 package com.pembekalan.xsisacademy.controller;
 
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.pembekalan.xsisacademy.dto.request.AuthorRequestDto;
 import com.pembekalan.xsisacademy.dto.response.AuthorResponseDto;
 import com.pembekalan.xsisacademy.service.AuthorService;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
-@Controller
-@RequestMapping("/author")
+@RestController
+@CrossOrigin("*")
+@RequestMapping("/api/author")
 public class AuthorController {
     @Autowired
     AuthorService authorService;
 
     @GetMapping("")
-    public ModelAndView getAllAuthors() {
-        ModelAndView view = new ModelAndView("author/index");
-
+    public ResponseEntity<?> getAllAuthors() {
         List<AuthorResponseDto> authorResponseDtos = authorService.getAllAuthors();
 
-        view.addObject("authors", authorResponseDtos);
+        HashMap<String, Object> resultMap = new HashMap<>();
+        resultMap.put("status", "200");
+        resultMap.put("message", "success");
+        resultMap.put("data", authorResponseDtos);
 
-        String title = "Authors Page";
-
-        view.addObject("title", title);
-
-        return view;
+        return new ResponseEntity<>(resultMap, HttpStatus.OK);
     }
 
-    @GetMapping("/form")
-    public ModelAndView authorForm() {
-        ModelAndView view = new ModelAndView("author/form");
-        AuthorResponseDto authorResponseDto = new AuthorResponseDto();
-
-        view.addObject("author", authorResponseDto);
-
-        return view;
-    }
-
-    @PostMapping("/save")
-    public ModelAndView save(@ModelAttribute AuthorRequestDto authorRequestDto, BindingResult result) {
-        if (!result.hasErrors()) {
-            try {
-                authorService.saveAuthor(authorRequestDto);
-            } catch (Exception e) {
-                System.out.println("error: " + e.getMessage());
-            }
-        }
-        return new ModelAndView("redirect:/author");
-    }
-
-    @GetMapping("/edit/{id}")
-    public ModelAndView editAuthor(@PathVariable Integer id) {
-        ModelAndView view = new ModelAndView("author/form");
-
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getAuthorById(@PathVariable Integer id) {
         AuthorResponseDto authorResponseDto = authorService.getAuthorById(id);
 
-        view.addObject("author", authorResponseDto);
+        HashMap<String, Object> resultMap = new HashMap<>();
+        resultMap.put("status", "200");
+        resultMap.put("message", "success");
+        resultMap.put("data", authorResponseDto);
 
-        return view;
+        return new ResponseEntity<>(resultMap, HttpStatus.OK);
     }
 
-    @GetMapping("/delete/{id}")
-    public ModelAndView deleteAuthor(@PathVariable Integer id) {
-        authorService.deleteAuthorById(id);
+    @PostMapping("")
+    public ResponseEntity<?> saveAuthor(@RequestBody AuthorRequestDto authorRequestDto) {
 
-        return new ModelAndView("redirect:/author");
+        AuthorResponseDto authorResponseDto = authorService.saveAuthor(authorRequestDto);
+
+        LinkedHashMap<String, Object> resultMap = new LinkedHashMap<>();
+
+        resultMap.put("status", "200");
+        resultMap.put("message", "success");
+        resultMap.put("data", authorResponseDto);
+
+        return new ResponseEntity<>(resultMap, HttpStatus.OK);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> editAuthor(@RequestBody AuthorRequestDto authorRequestDto) {
+
+        AuthorResponseDto authorResponseDto = authorService.saveAuthor(authorRequestDto);
+
+        LinkedHashMap<String, Object> resultMap = new LinkedHashMap<>();
+
+        resultMap.put("status", "200");
+        resultMap.put("message", "success");
+        resultMap.put("data", authorResponseDto);
+
+        return new ResponseEntity<>(resultMap, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteAuthor(@PathVariable Integer id) {
+        authorService.deleteAuthorById(id);
+        LinkedHashMap<String, Object> resultMap = new LinkedHashMap<>();
+
+        resultMap.put("status", "200");
+        resultMap.put("message", "success");
+
+        return new ResponseEntity<>(resultMap, HttpStatus.OK);
     }
 }
