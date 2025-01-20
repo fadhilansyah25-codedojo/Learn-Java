@@ -39,7 +39,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public List<BookResponseDto> getAllBooks() {
-        List<Book> books = bookRepository.findAll();
+        List<Book> books = bookRepository.getAllBooks();
 
         return books.stream()
                 .map(book -> modelMapper().map(book, BookResponseDto.class)).collect(Collectors.toList());
