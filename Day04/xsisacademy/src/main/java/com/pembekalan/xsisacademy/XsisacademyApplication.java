@@ -1,8 +1,9 @@
 package com.pembekalan.xsisacademy;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Locale;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -93,6 +94,11 @@ public class XsisacademyApplication {
 				Publisher publisherSeed = publisherRepository.findById(random.nextInt(10) + 1).orElse(null);
 				Category categorySeed = categoryRepository.findById(random.nextInt(3) + 1).orElse(null);
 
+				long minDay = LocalDate.of(1970, 1, 1).toEpochDay();
+				long maxDay = LocalDate.of(2015, 12, 31).toEpochDay();
+				long randomDay = ThreadLocalRandom.current().nextLong(minDay, maxDay);
+				LocalDate randomDate = LocalDate.ofEpochDay(randomDay);
+
 				Book bookSeed = new Book(
 						authorSeed,
 						categorySeed,
@@ -100,7 +106,7 @@ public class XsisacademyApplication {
 						faker.book().title(),
 						faker.book().title(),
 						(random.nextInt(100) + 1),
-						faker.date().between(new Date(2012 - 1900, 0, 1), new Date(2024 - 1900, 12, 1)));
+						randomDate);
 
 				bookRepository.save(bookSeed);
 			}

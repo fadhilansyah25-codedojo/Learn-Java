@@ -24,7 +24,7 @@ function openForm() {
     });
   }
   
-  function deleteAuthor (id) {
+  function deleteBook (id) {
     // confirm("Are you sure?", 
     //     $.ajax({
     //         type: "delete",
@@ -37,7 +37,7 @@ function openForm() {
     // );
     $.ajax({
         type: "get",
-        url: `/author/delete/${id}`,
+        url: `/book/delete/${id}`,
         dataType: "html",
         success: function (response) {
             location.reload()

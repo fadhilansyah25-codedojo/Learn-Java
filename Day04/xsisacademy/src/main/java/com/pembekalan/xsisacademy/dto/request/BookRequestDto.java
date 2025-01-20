@@ -1,6 +1,6 @@
 package com.pembekalan.xsisacademy.dto.request;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import lombok.Data;
 
@@ -13,5 +13,5 @@ public class BookRequestDto {
     private String title;
     private String synopsis;
     private Integer stock;
-    private Date publishedAt;
+    private LocalDate publishedAt;
 }

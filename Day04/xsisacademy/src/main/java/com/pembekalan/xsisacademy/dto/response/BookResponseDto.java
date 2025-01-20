@@ -1,6 +1,6 @@
 package com.pembekalan.xsisacademy.dto.response;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import com.pembekalan.xsisacademy.entity.Author;
 import com.pembekalan.xsisacademy.entity.Category;
@@ -17,5 +17,5 @@ public class BookResponseDto {
     private String title;
     private String synopsis;
     private Integer stock;
-    private Date publishedAt;
+    private LocalDate publishedAt;
 }

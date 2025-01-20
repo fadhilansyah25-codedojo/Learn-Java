@@ -18,12 +18,12 @@
 
     <div class="mb-3">
         <label for="publishedAt" class="form-label">Published At</label>
-        <input type="date" class="form-control" id="publishedAt" name="publishedAt" th:field="*{publishedAt}" autofocus>
+        <input type="date" class="form-control" id="publishedAt" name="publishedAt" th:value="*{publishedAt}" autofocus>
     </div>
 
     <div class="mb-3">
-        <label for="publisherId" class="form-label">Publisher</label>
-        <select nama="publisherId" class="form-select" aria-label="Default select example">
+        <label for="publisher_id" class="form-label">Publisher</label>
+        <select name="publisher_id" class="form-select" aria-label="Default select example">
             <option value="" selected disabled>Select Publisher</option>
             <option th:each="publisher : ${publishers}" th:value="${publisher.id}" th:text="${publisher.name}"
                 th:selected="${publisher.id == selectedPublisherId}">
@@ -31,11 +31,20 @@
     </div>
 
     <div class="mb-3">
-        <label for="auhtorId" class="form-label">Author</label>
-        <select nama="author" class="form-select" aria-label="Default select example">
+        <label for="author_id" class="form-label">Author</label>
+        <select name="author_id" class="form-select" aria-label="Default select example">
             <option value="" selected disabled>Select Author</option>
             <option th:each="author : ${authors}" th:value="${author.id}" th:text="${author.name}"
                 th:selected="${author.id == selectedAuthorId}">
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label for="category_id" class="form-label">Category</label>
+        <select name="category_id" class="form-select" aria-label="Default select example">
+            <option value="" selected disabled>Select Category</option>
+            <option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}"
+                th:selected="${category.id == selectedCategoryId}">
         </select>
     </div>
 

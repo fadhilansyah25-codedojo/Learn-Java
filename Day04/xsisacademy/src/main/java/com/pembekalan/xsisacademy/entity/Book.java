@@ -1,6 +1,6 @@
 package com.pembekalan.xsisacademy.entity;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Book extends BaseEntity {
 
-    public Book(Author author, Category category, Publisher publisher, String title, String synopsis, Integer stock, Date publishedAt) {
+    public Book(Author author, Category category, Publisher publisher, String title, String synopsis, Integer stock, LocalDate publishedAt) {
         this.author = author;
         this.category = category;
         this.publisher = publisher;
@@ -56,5 +56,5 @@ public class Book extends BaseEntity {
 
     private Integer stock;
 
-    private Date publishedAt;
+    private LocalDate publishedAt;
 }
