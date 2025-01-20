@@ -26,7 +26,6 @@ import com.pembekalan.xsisacademy.dto.response.AuthorResponseDto;
 import com.pembekalan.xsisacademy.dto.response.BookResponseDto;
 import com.pembekalan.xsisacademy.dto.response.CategoryResponseDto;
 import com.pembekalan.xsisacademy.dto.response.PublisherResponseDto;
-import com.pembekalan.xsisacademy.entity.Category;
 import com.pembekalan.xsisacademy.repository.CategoryRepository;
 import com.pembekalan.xsisacademy.service.AuthorService;
 
@@ -65,18 +64,32 @@ public class BookViewController {
         @SuppressWarnings("null")
         public String bookForm(Model model) {
                 BookRequestDto bookRequestDto = new BookRequestDto();
-
-                ResponseEntity<ApiResponse<List<PublisherResponseDto>>> response = restTemplate.exchange(
+                ResponseEntity<ApiResponse<List<PublisherResponseDto>>> publisherResponse = restTemplate.exchange(
                                 ApiConfig.PUBLISHERS,
-                                HttpMethod.GET, null,
+                                HttpMethod.GET,
+                                null,
                                 new ParameterizedTypeReference<ApiResponse<List<PublisherResponseDto>>>() {
                                 });
 
-                List<PublisherResponseDto> publishers = response.getBody().getData();
+                ResponseEntity<ApiResponse<List<AuthorResponseDto>>> authorResponse = restTemplate.exchange(
+                                ApiConfig.AUTHORS,
+                                HttpMethod.GET,
+                                null,
+                                new ParameterizedTypeReference<ApiResponse<List<AuthorResponseDto>>>() {
+                                });
 
-                List<AuthorResponseDto> authors = authorService.getAllAuthors();
+                ResponseEntity<ApiResponse<List<CategoryResponseDto>>> categoryResponse = restTemplate.exchange(
+                                ApiConfig.CATEGORY,
+                                HttpMethod.GET,
+                                null,
+                                new ParameterizedTypeReference<ApiResponse<List<CategoryResponseDto>>>() {
+                                });
 
-                List<Category> categories = categoryRepository.findAll();
+                List<PublisherResponseDto> publishers = publisherResponse.getBody().getData();
+
+                List<AuthorResponseDto> authors = authorResponse.getBody().getData();
+
+                List<CategoryResponseDto> categories = categoryResponse.getBody().getData();
 
                 model.addAttribute("book", bookRequestDto);
                 model.addAttribute("publishers", publishers);
