@@ -37,7 +37,6 @@ public class BookViewController {
         @Autowired
         RestTemplate restTemplate;
 
-
         @GetMapping("")
         @SuppressWarnings("null")
         public String getAllBooks(Model model) {

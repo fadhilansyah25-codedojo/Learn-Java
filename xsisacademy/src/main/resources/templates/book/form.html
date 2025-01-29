@@ -1,0 +1,52 @@
+<form th:action="@{~/book/save}" th:object="${book}" method="post">
+    <input type="hidden" name="id" id="id" th:field="*{id}">
+
+    <div class="mb-3">
+        <label for="title" class="form-label">Title</label>
+        <input type="text" class="form-control" id="title" name="title" th:field="*{title}" autofocus>
+    </div>
+
+    <div class="mb-3">
+        <label for="stock" class="form-label">stock</label>
+        <input min="0" type="number" class="form-control" id="stock" name="stock" th:field="*{stock}" autofocus>
+    </div>
+
+    <div class="mb-3">
+        <label for="synopsis" class="form-label">Synopsis</label>
+        <textarea rows="3" class="form-control" id="synopsis" name="synopsis" th:field="*{synopsis}" autofocus />
+    </div>
+
+    <div class="mb-3">
+        <label for="publishedAt" class="form-label">Published At</label>
+        <input type="date" class="form-control" id="publishedAt" name="publishedAt" th:value="*{publishedAt}" autofocus>
+    </div>
+
+    <div class="mb-3">
+        <label for="publisher_id" class="form-label">Publisher</label>
+        <select name="publisher_id" class="form-select" aria-label="Default select example">
+            <option value="" selected disabled>Select Publisher</option>
+            <option th:each="publisher : ${publishers}" th:value="${publisher.id}" th:text="${publisher.name}"
+                th:selected="${publisher.id == selectedPublisherId}">
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label for="author_id" class="form-label">Author</label>
+        <select name="author_id" class="form-select" aria-label="Default select example">
+            <option value="" selected disabled>Select Author</option>
+            <option th:each="author : ${authors}" th:value="${author.id}" th:text="${author.name}"
+                th:selected="${author.id == selectedAuthorId}">
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label for="category_id" class="form-label">Category</label>
+        <select name="category_id" class="form-select" aria-label="Default select example">
+            <option value="" selected disabled>Select Category</option>
+            <option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}"
+                th:selected="${category.id == selectedCategoryId}">
+        </select>
+    </div>
+
+    <button type="submit" style="float: right;" class="btn btn-primary mb-3">Save</button>
+</form>
