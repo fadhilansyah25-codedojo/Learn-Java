@@ -19,7 +19,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import com.pembekalan.xsisacademy.service.implementation.UserAuthServiceImpl;
+import com.pembekalan.xsisacademy.service.implementation.UserServiceImpl;
 import com.pembekalan.xsisacademy.util.JwtUtil;
 
 @Configuration
@@ -28,7 +28,7 @@ import com.pembekalan.xsisacademy.util.JwtUtil;
 public class SecurityConfig {
 
     @Autowired
-    private UserAuthServiceImpl userAuthServiceImpl;
+    private UserServiceImpl userAuthServiceImpl;
 
     @Autowired
     private JwtUtil jwtUtil;
@@ -46,30 +46,30 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
+        return http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .csrf(csrf -> {
-                    try {
-                        csrf.disable().authorizeHttpRequests(auth -> auth.requestMatchers("/api/login", "/api/register")
-                                .permitAll().anyRequest().authenticated());
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                })
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth.requestMatchers("/api/login", "/api/register")
+                        .permitAll().anyRequest().authenticated())
                 .rememberMe(rememberMe -> rememberMe
                         .alwaysRemember(true)
                         .tokenValiditySeconds(86400)
-                        .useSecureCookie(true));
+                        .useSecureCookie(true))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(jwtRequestFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(dynamicAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .build();
 
-        http.addFilterBefore(jwtRequestFilter(), UsernamePasswordAuthenticationFilter.class);
-
-        return http.build();
     }
 
     @Bean
     public JwtRequestFilter jwtRequestFilter() {
         return new JwtRequestFilter(jwtUtil, userAuthServiceImpl);
+    }
+
+    @Bean
+    DynamicAuthorizationFilter dynamicAuthorizationFilter() {
+        return new DynamicAuthorizationFilter();
     }
 
     @Bean

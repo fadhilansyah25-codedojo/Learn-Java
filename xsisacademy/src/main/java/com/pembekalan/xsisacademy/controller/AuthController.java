@@ -9,6 +9,7 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,9 +18,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pembekalan.xsisacademy.dto.request.AuthenticationRequestDto;
-import com.pembekalan.xsisacademy.entity.UserAuth;
-import com.pembekalan.xsisacademy.repository.UserAuthRepository;
-import com.pembekalan.xsisacademy.service.implementation.UserAuthServiceImpl;
+import com.pembekalan.xsisacademy.entity.User;
+import com.pembekalan.xsisacademy.repository.UserRepository;
+import com.pembekalan.xsisacademy.service.implementation.UserServiceImpl;
 import com.pembekalan.xsisacademy.util.JwtUtil;
 
 import jakarta.servlet.http.Cookie;
@@ -32,10 +33,10 @@ public class AuthController {
     private AuthenticationManager authenticationManager;
 
     @Autowired
-    private UserAuthServiceImpl userAuthServiceImpl;
+    private UserServiceImpl userAuthServiceImpl;
 
     @Autowired
-    private UserAuthRepository userAuthRepository;
+    private UserRepository userAuthRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -44,26 +45,33 @@ public class AuthController {
     JwtUtil jwtUtil;
 
     @PostMapping("/register")
-    public String registerUser(@RequestBody UserAuth userAuth) {
-        userAuth.setPassword(passwordEncoder.encode(userAuth.getPassword()));
+    public String registerUser(@RequestBody User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        userAuthRepository.save(userAuth);
+        userAuthRepository.save(user);
         return "User Authentication has been created";
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody AuthenticationRequestDto authenticationRequest) {
         try {
-            authenticationManager.authenticate(
+            Authentication auth = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(),
                             authenticationRequest.getPassword()));
 
-            final UserDetails userDetails = userAuthServiceImpl.loadUserByUsername(authenticationRequest.getUsername());
-            final String jwt = jwtUtil.generateToken(userDetails);
+            if (auth.isAuthenticated()) {
+                final UserDetails userDetails = userAuthServiceImpl
+                        .loadUserByUsername(authenticationRequest.getUsername());
+                final String jwt = jwtUtil.generateToken(userDetails);
 
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.SET_COOKIE, createCookie(jwt))
-                    .body(Map.of("status", "success", "message", "Authenticated"));
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.SET_COOKIE, createCookie(jwt))
+                        .body(Map.of("status", "success", "message", "Authenticated"));
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(Map.of("status", "error", "message", "Invalid credentials"));
+            }
+
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("status", "error", "message", "Invalid credentials"));
@@ -95,11 +103,11 @@ public class AuthController {
     private String createCookie(String token) {
         return ResponseCookie.from("jwt", token)
                 .httpOnly(true)
-                .secure(true) // Hanya di production
+                // .secure(true) // Hanya di production
                 .path("/")
                 .maxAge(15 * 60) // 15 menit
                 // .sameSite("Strict")
-                .sameSite("None")
+                // .sameSite("None")
                 .build()
                 .toString();
     }

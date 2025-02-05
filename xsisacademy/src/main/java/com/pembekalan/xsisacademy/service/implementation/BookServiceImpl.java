@@ -5,6 +5,8 @@ import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.pembekalan.xsisacademy.dto.request.BookRequestDto;
@@ -43,6 +45,12 @@ public class BookServiceImpl implements BookService {
 
         return books.stream()
                 .map(book -> modelMapper().map(book, BookResponseDto.class)).collect(Collectors.toList());
+    }
+
+    public Page<BookResponseDto> getBooksPage(PageRequest pageRequest) {
+        Page<Book> books = bookRepository.findAll(pageRequest);
+
+        return books.map(book -> modelMapper().map(book, BookResponseDto.class));
     }
 
     @Override

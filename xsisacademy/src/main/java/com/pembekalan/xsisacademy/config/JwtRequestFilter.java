@@ -7,7 +7,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,7 +17,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.pembekalan.xsisacademy.service.implementation.UserAuthServiceImpl;
+import com.pembekalan.xsisacademy.service.implementation.UserServiceImpl;
 import com.pembekalan.xsisacademy.util.JwtUtil;
 
 import java.io.IOException;
@@ -29,7 +31,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     private JwtUtil jwtUtil;
 
     @Autowired
-    private UserAuthServiceImpl userAuthServiceImpl;
+    private UserServiceImpl userAuthServiceImpl;
 
     @SuppressWarnings("null")
     @Override
@@ -46,7 +48,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         final String authorizationHeader = request.getHeader("Authorization");
 
-        String username = null;
         String jwt = null;
         Cookie[] cookies = request.getCookies();
 
@@ -62,27 +63,55 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             jwt = authorizationHeader.substring(7);
         }
 
-        if (jwt != null) {
-            username = jwtUtil.extractUsername(jwt);
+        if (jwt == null) {
+            response.sendError(HttpStatus.UNAUTHORIZED.value(), "No Authorization & Token");
+            return;
         }
 
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        // username = jwtUtil.extractUsername(jwt);
 
-            UserDetails userDetails = this.userAuthServiceImpl.loadUserByUsername(username);
+        // if (username != null &&
+        // SecurityContextHolder.getContext().getAuthentication() == null) {
 
-            if (jwtUtil.validateToken(jwt, userDetails)) {
+        // UserDetails userDetails =
+        // this.userAuthServiceImpl.loadUserByUsername(username);
 
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities());
+        // if (jwtUtil.validateToken(jwt, userDetails)) {
 
-                authentication
-                        .setDetails(new WebAuthenticationDetailsSource()
-                                .buildDetails(request));
+        // UsernamePasswordAuthenticationToken authentication = new
+        // UsernamePasswordAuthenticationToken(
+        // userDetails, null, userDetails.getAuthorities());
 
-                SecurityContextHolder
-                        .getContext()
-                        .setAuthentication(authentication);
+        // authentication
+        // .setDetails(new WebAuthenticationDetailsSource()
+        // .buildDetails(request));
+
+        // SecurityContextHolder
+        // .getContext()
+        // .setAuthentication(authentication);
+        // }
+        // }
+
+        try {
+            String username = jwtUtil.extractUsername(jwt);
+            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserDetails userDetails = userAuthServiceImpl.loadUserByUsername(username);
+                if (jwtUtil.validateToken(jwt, userDetails)) {
+                    // Set autentikasi di SecurityContext
+                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                            userDetails, null, userDetails.getAuthorities());
+                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                } else {
+                    // Token tidak valid
+                    response.sendError(HttpStatus.UNAUTHORIZED.value(), "Invalid Token");
+                    return;
+                }
             }
+        } catch (Exception e) {
+            // Autentikasi gagal
+            response.sendError(HttpStatus.UNAUTHORIZED.value(), e.getMessage());
+            return;
         }
 
         chain.doFilter(request, response);

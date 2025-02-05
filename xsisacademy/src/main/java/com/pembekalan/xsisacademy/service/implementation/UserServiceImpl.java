@@ -1,52 +1,41 @@
 package com.pembekalan.xsisacademy.service.implementation;
 
-import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.pembekalan.xsisacademy.dto.request.UserRequestDto;
-import com.pembekalan.xsisacademy.dto.response.UserResponseDto;
 import com.pembekalan.xsisacademy.entity.User;
 import com.pembekalan.xsisacademy.repository.UserRepository;
-import com.pembekalan.xsisacademy.service.UserService;
 
 @Service
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl implements UserDetailsService {
 
     @Autowired
-    UserRepository userRepository;
-
-    private ModelMapper modelMapper() {
-        return new ModelMapper();
-    }
+    private UserRepository userRepository;
 
     @Override
-    public List<UserResponseDto> getAllUsers() {
-        List<User> users = userRepository.findAll();
-        List<UserResponseDto> userResponseDtos = users.stream()
-                .map(user -> modelMapper().map(user, UserResponseDto.class)).collect(Collectors.toList());
-        return userResponseDtos;
-    }
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepository.findByUsername(username);
+        if (user == null) {
+            throw new UsernameNotFoundException("User not found with username: " + username);
+        }
 
-    @Override
-    public UserResponseDto getUserById(Integer id) {
-        User user = userRepository.findById(id).orElse(null);
-        UserResponseDto userResponseDto = modelMapper().map(user, UserResponseDto.class);
-        return userResponseDto;
-    }
+        Set<GrantedAuthority> authorities = user.getRoles().stream()
+                .flatMap(role -> role.getPermissions().stream())
+                .map(permission -> new SimpleGrantedAuthority(permission.getName()))
+                .collect(Collectors.toSet());
 
-    @Override
-    public void deleteUserById(Integer id) {
-        userRepository.deleteById(id);
-    }
-
-    @Override
-    public User saveUser(UserRequestDto userRequestDto) {
-        User user = modelMapper().map(userRequestDto, User.class);
-        return userRepository.save(user);
+        return new org.springframework.security.core.userdetails.User(
+                user.getUsername(),
+                user.getPassword(),
+                authorities);
     }
 
 }
