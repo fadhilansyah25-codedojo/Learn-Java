@@ -75,3 +75,7 @@ secrets.yml
 .sts4-cache
 .git-hooks/
 node_modules
+
+.env
+keystore.p12
+.p12

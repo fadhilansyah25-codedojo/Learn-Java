@@ -51,10 +51,6 @@ public class DynamicAuthorizationFilter extends OncePerRequestFilter {
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toSet());
 
-        for (String string : userPermissions) {
-            System.out.println(string);
-        }
-
         // 4. Cek apakah pengguna memiliki permission yang diperlukan
         boolean hasAccess = requiredPermissions.stream()
                 .anyMatch(perm -> userPermissions.contains(perm.getRequiredPermission()));

@@ -111,7 +111,7 @@ public class XsisacademyApplication {
 
 			Random random = new Random();
 
-			for (int i = 0; i < 20; i++) {
+			for (int i = 0; i < 25; i++) {
 
 				Author authorSeed = authorRepository.findById(random.nextInt(10) + 1).orElse(null);
 				Publisher publisherSeed = publisherRepository.findById(random.nextInt(10) + 1).orElse(null);
@@ -187,14 +187,13 @@ public class XsisacademyApplication {
 			ep4.setRequiredPermission("USER_DELETE");
 			endpointPermissionRepo.save(ep4);
 
-			// Buat super user manual testing
+			// Buat super user manual untuk testing
 			User superUser = new User();
 			superUser.setUsername("fadiltesting25");
 			superUser.setEmail("fadiltesting25@gmail.com");
 			superUser.setPassword(passwordEncoder.encode("12345678"));
 
 			Set<Role> roles = new HashSet<>();
-			roles.add(userRole);
 			roles.add(adminRole);
 			superUser.setRoles(roles);
 			userRepository.save(superUser);
