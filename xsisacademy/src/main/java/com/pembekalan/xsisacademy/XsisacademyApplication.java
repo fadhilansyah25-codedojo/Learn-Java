@@ -87,14 +87,6 @@ public class XsisacademyApplication {
 
 			Faker faker = new Faker(Locale.forLanguageTag("id-ID"));
 
-			// for (int i = 0; i < 10; i++) {
-			// User userSeed = new User(
-			// faker.name().fullName(),
-			// faker.phoneNumber().phoneNumber(),
-			// faker.address().streetAddress() + " " + faker.address().city());
-
-			// userRepository.save(userSeed);
-			// }
 
 			for (int i = 0; i < 10; i++) {
 				Publisher publisherSeed = new Publisher(
@@ -177,7 +169,7 @@ public class XsisacademyApplication {
 
 			EndpointPermission ep3 = new EndpointPermission();
 			ep3.setHttpMethod("PUT");
-			ep3.setUrlPattern("/api/book/**");
+			ep3.setUrlPattern("/api/book");
 			ep3.setRequiredPermission("USER_UPDATE");
 			endpointPermissionRepo.save(ep3);
 
@@ -194,7 +186,7 @@ public class XsisacademyApplication {
 			superUser.setPassword(passwordEncoder.encode("12345678"));
 
 			Set<Role> roles = new HashSet<>();
-			roles.add(adminRole);
+			roles.add(userRole);
 			superUser.setRoles(roles);
 			userRepository.save(superUser);
 		};

@@ -64,8 +64,17 @@ public class AuthController {
                         .loadUserByUsername(authenticationRequest.getUsername());
                 final String jwt = jwtUtil.generateToken(userDetails);
 
+                ResponseCookie cookie = ResponseCookie.from("jwt", jwt)
+                        .httpOnly(true)
+                        // .secure(true) // Hanya di production
+                        .path("/")
+                        .maxAge(15 * 60) // 15 menit
+                        // .sameSite("Strict")
+                        // .sameSite("None")
+                        .build();
+
                 return ResponseEntity.ok()
-                        .header(HttpHeaders.SET_COOKIE, createCookie(jwt))
+                        .header(HttpHeaders.SET_COOKIE, cookie.toString())
                         .body(Map.of("status", "success", "message", "Authenticated"));
             } else {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
@@ -100,15 +109,22 @@ public class AuthController {
         return ResponseEntity.ok().build();
     }
 
-    private String createCookie(String token) {
-        return ResponseCookie.from("jwt", token)
+    @PostMapping("/logout")
+    public ResponseEntity<?> logoutUser() {
+        ResponseCookie cookie = ResponseCookie.from("jwt", "")
                 .httpOnly(true)
                 // .secure(true) // Hanya di production
                 .path("/")
-                .maxAge(15 * 60) // 15 menit
+                .maxAge(0) //
                 // .sameSite("Strict")
                 // .sameSite("None")
-                .build()
-                .toString();
+                .build();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body(Map.of(
+                        "status", "success",
+                        "message", "Logged out"));
     }
+
 }

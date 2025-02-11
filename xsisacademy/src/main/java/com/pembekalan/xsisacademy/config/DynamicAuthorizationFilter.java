@@ -6,7 +6,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.Authentication;
@@ -35,31 +34,40 @@ public class DynamicAuthorizationFilter extends OncePerRequestFilter {
         String httpMethod = request.getMethod();
         String requestUri = request.getRequestURI();
 
-        // 1. Cari permission yang cocok untuk endpoint ini
-        List<EndpointPermission> requiredPermissions = endpointPermissionService
-                .findMatchingPermissions(httpMethod, requestUri);
+        List<EndpointPermission> requiredPermissions = endpointPermissionService.findMatchingPermissions(httpMethod,
+                requestUri);
 
-        // 2. Jika tidak ada aturan, izinkan akses
+        // 1️⃣ Jika tidak ada aturan, langsung izinkan akses
         if (requiredPermissions.isEmpty()) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        // 3. Ambil permissions pengguna yang sedang login
+        // 2️⃣ Ambil permissions pengguna
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("Unauthorized - Please log in");
+            return;
+        }
+
         Set<String> userPermissions = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toSet());
 
-        // 4. Cek apakah pengguna memiliki permission yang diperlukan
+        // 3️⃣ Cek apakah pengguna memiliki permission yang diperlukan
         boolean hasAccess = requiredPermissions.stream()
                 .anyMatch(perm -> userPermissions.contains(perm.getRequiredPermission()));
 
-        if (hasAccess) {
-            filterChain.doFilter(request, response);
-        } else {
-            response.sendError(HttpStatus.FORBIDDEN.value(), "Akses ditolak!");
+        if (!hasAccess) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.getWriter().write("Access Denied!");
+            return;
         }
+
+        // 4️⃣ Jika semua cek lolos, lanjutkan request
+        filterChain.doFilter(request, response);
     }
 
 }

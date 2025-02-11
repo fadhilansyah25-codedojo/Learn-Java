@@ -31,6 +31,20 @@
 	</properties>
 	<dependencies>
 
+		<!-- Untuk logging JSON (Logstash) -->
+		<dependency>
+			<groupId>net.logstash.logback</groupId>
+			<artifactId>logstash-logback-encoder</artifactId>
+			<version>7.4</version>
+		</dependency>
+
+		<!-- Untuk async logging -->
+		<dependency>
+			<groupId>com.lmax</groupId>
+			<artifactId>disruptor</artifactId>
+			<version>3.4.4</version>
+		</dependency>
+
 		<!-- JWT authentication dependencies -->
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
@@ -48,11 +62,18 @@
 			<version>0.11.5</version>
 		</dependency>
 
+		<!-- spring boot starter security -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
 
+		<!-- Bucket4j rate limiter -->
+		<dependency>
+			<groupId>com.github.vladimir-bukhtoyarov</groupId>
+			<artifactId>bucket4j-core</artifactId>
+			<version>7.6.0</version>
+		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.modelmapper/modelmapper -->
 		<dependency>

@@ -49,21 +49,25 @@ public class SecurityConfig {
         return http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(auth -> auth.requestMatchers("/api/login", "/api/register")
-                        .permitAll().anyRequest().authenticated())
-                .rememberMe(rememberMe -> rememberMe
-                        .alwaysRemember(true)
-                        .tokenValiditySeconds(86400)
-                        .useSecureCookie(true))
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                // .authorizeHttpRequests(auth -> auth
+                // .requestMatchers("/api/login", "/api/register", "/api/logout").permitAll()
+                // .anyRequest().authenticated() // Blokir endpoint lain tanpa autentikasi
+                // )
+                // .rememberMe(rememberMe -> rememberMe
+                // .alwaysRemember(true)
+                // .tokenValiditySeconds(86400)
+                // .useSecureCookie(true))
+                .addFilterBefore(customRateLimiterFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtRequestFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(dynamicAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(apiLoggingFilter(), JwtRequestFilter.class)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .build();
 
     }
 
     @Bean
-    public JwtRequestFilter jwtRequestFilter() {
+    JwtRequestFilter jwtRequestFilter() {
         return new JwtRequestFilter(jwtUtil, userAuthServiceImpl);
     }
 
@@ -73,7 +77,17 @@ public class SecurityConfig {
     }
 
     @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
+    CustomRateLimiterFilter customRateLimiterFilter() {
+        return new CustomRateLimiterFilter();
+    }
+
+    @Bean
+    ApiLoggingFilter apiLoggingFilter() {
+        return new ApiLoggingFilter();
+    }
+
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("http://localhost:5173")); // URL SvelteKit
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
